@@ -8,6 +8,11 @@ namespace MastersHall
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
+        private RenderTarget2D _renderTarget;
+
+        public float scale = 0.44444f;
+
+        Texture2D character1;
 
         public Game1()
         {
@@ -18,16 +23,24 @@ namespace MastersHall
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
+
+            _graphics.PreferredBackBufferWidth = 1280;
+            _graphics.PreferredBackBufferHeight = 720;
+            _graphics.ApplyChanges();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            
+            character1 = Content.Load<Texture2D>("chatgpt_character_1");
 
-            // TODO: use this.Content to load your game content here
+            _renderTarget = new RenderTarget2D(
+                GraphicsDevice,
+                1920,
+                1080);
+
         }
 
         protected override void Update(GameTime gameTime)
@@ -35,16 +48,31 @@ namespace MastersHall
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
-
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
+            scale = 1F / (1080F / _graphics.GraphicsDevice.Viewport.Height);
+
+            GraphicsDevice.SetRenderTarget(_renderTarget);
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+
+            _spriteBatch.Draw(character1, Vector2.Zero, Color.White);
+
+            _spriteBatch.End();
+
+            GraphicsDevice.SetRenderTarget(null);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+
+            _spriteBatch.Begin();
+            _spriteBatch.Draw(_renderTarget, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            _spriteBatch.End();
+
+
 
             base.Draw(gameTime);
         }
