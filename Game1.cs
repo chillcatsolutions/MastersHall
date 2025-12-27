@@ -14,6 +14,8 @@ namespace MastersHall
         public float scale = 1f;
         public float characterScale = 0.25f;
 
+        private float moveSpeed = 400f;
+
         Texture2D character1;
         Texture2D background;
 
@@ -56,6 +58,54 @@ namespace MastersHall
 
         protected override void Update(GameTime gameTime)
         {
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            Vector2 input = Vector2.Zero;
+
+            // Keyboard (arrow keys + WASD)
+            KeyboardState keyboardState = Keyboard.GetState();
+            if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
+            {
+                input.X += 1f;
+            }
+            if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.A))
+            {
+                input.X -= 1f;
+            }
+            if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.W))
+            {
+                input.Y -= 1f;
+            }
+            if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
+            {
+                input.Y += 1f;
+            }
+
+            // Gamepad (left stick + DPad)
+            GamePadState pad = GamePad.GetState(PlayerIndex.One);
+            if (pad.IsConnected)
+            {
+                input += new Vector2(pad.ThumbSticks.Left.X, -pad.ThumbSticks.Left.Y);
+
+                if (pad.DPad.Left == ButtonState.Pressed) input.X -= 1f;
+                if (pad.DPad.Right == ButtonState.Pressed) input.X += 1f;
+                if (pad.DPad.Up == ButtonState.Pressed) input.Y -= 1f;
+                if (pad.DPad.Down == ButtonState.Pressed) input.Y += 1f;
+            }
+
+            // Normalize so diagonal movement isn't faster
+            if (input != Vector2.Zero)
+            {
+                input.Normalize();
+            }
+
+            playerPosition += input * moveSpeed * dt;
+
+            // Clamp to render target bounds (taking scaled sprite size into account)
+            float spriteW = character1.Width * characterScale;
+            float spriteH = character1.Height * characterScale;
+            playerPosition.X = MathHelper.Clamp(playerPosition.X, 0f, _renderTarget.Width - spriteW);
+            playerPosition.Y = MathHelper.Clamp(playerPosition.Y, 0f, _renderTarget.Height - spriteH);
+
             base.Update(gameTime);
         }
 
