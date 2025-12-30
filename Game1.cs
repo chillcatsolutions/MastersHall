@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using MastersHall.Core;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -21,11 +22,14 @@ namespace MastersHall
 
         Vector2 playerPosition;
 
+        public InputManager inputManager;
+
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            inputManager = new InputManager();
         }
 
         protected override void Initialize()
@@ -43,62 +47,22 @@ namespace MastersHall
             
             character1 = Content.Load<Texture2D>("chatgpt_character_1");
             background = Content.Load<Texture2D>("images/backgrounds/reference_background");
-
+             
             _renderTarget = new RenderTarget2D(
                 GraphicsDevice,
                 1920,
                 1080);
 
-            
-            
             playerPosition = new Vector2((_renderTarget.Width / 2) - (character1.Width * characterScale / 2), (_renderTarget.Height / 2) - (character1.Height * characterScale / 2));
-
-
         }
 
         protected override void Update(GameTime gameTime)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-            Vector2 input = Vector2.Zero;
 
-            // Keyboard (arrow keys + WASD)
-            KeyboardState keyboardState = Keyboard.GetState();
-            if (keyboardState.IsKeyDown(Keys.Right) || keyboardState.IsKeyDown(Keys.D))
-            {
-                input.X += 1f;
-            }
-            if (keyboardState.IsKeyDown(Keys.Left) || keyboardState.IsKeyDown(Keys.A))
-            {
-                input.X -= 1f;
-            }
-            if (keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.W))
-            {
-                input.Y -= 1f;
-            }
-            if (keyboardState.IsKeyDown(Keys.Down) || keyboardState.IsKeyDown(Keys.S))
-            {
-                input.Y += 1f;
-            }
+            inputManager.handleInput();
 
-            // Gamepad (left stick + DPad)
-            GamePadState pad = GamePad.GetState(PlayerIndex.One);
-            if (pad.IsConnected)
-            {
-                input += new Vector2(pad.ThumbSticks.Left.X, -pad.ThumbSticks.Left.Y);
-
-                if (pad.DPad.Left == ButtonState.Pressed) input.X -= 1f;
-                if (pad.DPad.Right == ButtonState.Pressed) input.X += 1f;
-                if (pad.DPad.Up == ButtonState.Pressed) input.Y -= 1f;
-                if (pad.DPad.Down == ButtonState.Pressed) input.Y += 1f;
-            }
-
-            // Normalize so diagonal movement isn't faster
-            if (input != Vector2.Zero)
-            {
-                input.Normalize();
-            }
-
-            playerPosition += input * moveSpeed * dt;
+            playerPosition += inputManager.input * moveSpeed * dt;
 
             // Clamp to render target bounds (taking scaled sprite size into account)
             float spriteW = character1.Width * characterScale;
