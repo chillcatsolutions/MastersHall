@@ -1,7 +1,7 @@
 ﻿using MastersHall.Core;
+using MastersHall.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 
 namespace MastersHall
@@ -23,6 +23,10 @@ namespace MastersHall
         Vector2 playerPosition;
 
         public InputManager inputManager;
+
+        // Defines the tilemap to draw.
+        private Tilemap _tilemap;
+
 
         public Game1()
         {
@@ -54,8 +58,12 @@ namespace MastersHall
                 1080);
 
             playerPosition = new Vector2((_renderTarget.Width / 2) - (character1.Width * characterScale / 2), (_renderTarget.Height / 2) - (character1.Height * characterScale / 2));
-        }
 
+            // Create the tilemap from the XML configuration file.
+            _tilemap = Tilemap.FromFile(Content, "images/tilemap-definitions.xml");
+            _tilemap.Scale = new Vector2(4.0f, 4.0f);
+        }
+            
         protected override void Update(GameTime gameTime)
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
@@ -83,7 +91,10 @@ namespace MastersHall
 
             _spriteBatch.Begin();
 
-            _spriteBatch.Draw(background, Vector2.Zero, Color.White);
+            // Draw the tilemap.
+            _tilemap.Draw(_spriteBatch);
+
+            //_spriteBatch.Draw(background, Vector2.Zero, Color.White);
             _spriteBatch.Draw(texture: character1, position: playerPosition, sourceRectangle: null, color: Color.White, rotation: 0f, origin: Vector2.Zero, scale: characterScale, effects: SpriteEffects.None, layerDepth: 0f);
 
 

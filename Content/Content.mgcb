@@ -38,3 +38,18 @@
 /processorParam:TextureFormat=Color
 /build:images/backgrounds/reference_background.png;images/backgrounds/reference_background
 
+#begin images/tilemap-definitions.xml
+/copy:images/tilemap-definitions.xml
+
+#begin images/tileset.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:images/tileset.png
+

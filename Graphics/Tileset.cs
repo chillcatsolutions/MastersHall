@@ -1,8 +1,7 @@
-﻿using MastersHall.Graphics;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace MastersHall.World
+namespace MastersHall.Graphics
 {
     public class Tileset
     {
