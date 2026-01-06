@@ -27,6 +27,8 @@ namespace MastersHall
         // Defines the tilemap to draw.
         private Tilemap _tilemap;
 
+        private FollowCamera camera;
+
 
         public Game1()
         {
@@ -34,6 +36,7 @@ namespace MastersHall
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             inputManager = new InputManager();
+            camera = new(Vector2.Zero);
         }
 
         protected override void Initialize()
@@ -78,6 +81,8 @@ namespace MastersHall
             playerPosition.X = MathHelper.Clamp(playerPosition.X, 0f, _renderTarget.Width - spriteW);
             playerPosition.Y = MathHelper.Clamp(playerPosition.Y, 0f, _renderTarget.Height - spriteH);
 
+            camera.Follow(new Rectangle((int)playerPosition.X, (int)playerPosition.Y, (int)spriteW, (int)spriteH), new Vector2(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight));
+
             base.Update(gameTime);
         }
 
@@ -95,6 +100,7 @@ namespace MastersHall
             _tilemap.Draw(_spriteBatch);
 
             //_spriteBatch.Draw(background, Vector2.Zero, Color.White);
+            //_spriteBatch.Draw(texture: character1, position: playerPosition, sourceRectangle: null, color: Color.White, rotation: 0f, origin: Vector2.Zero, scale: characterScale, effects: SpriteEffects.None, layerDepth: 0f);
             _spriteBatch.Draw(texture: character1, position: playerPosition, sourceRectangle: null, color: Color.White, rotation: 0f, origin: Vector2.Zero, scale: characterScale, effects: SpriteEffects.None, layerDepth: 0f);
 
 
@@ -104,7 +110,8 @@ namespace MastersHall
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-            _spriteBatch.Draw(_renderTarget, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            //_spriteBatch.Draw(_renderTarget, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            _spriteBatch.Draw(_renderTarget, camera.position*scale, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
             _spriteBatch.End();
 
 
