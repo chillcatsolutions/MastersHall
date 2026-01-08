@@ -5,14 +5,15 @@
     },
     "activeFile": "tilemaps/tilemap_practice1.tmx",
     "expandedProjectPaths": [
+        "."
     ],
     "fileStates": {
         "tilemaps/tilemap_practice1.tmx": {
             "scale": 4,
-            "selectedLayer": 1,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 238.625,
-                "y": 156.625
+                "x": 271.625,
+                "y": 163.125
             }
         },
         "tilesets/tileset.tsx": {

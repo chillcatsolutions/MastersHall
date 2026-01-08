@@ -26,6 +26,13 @@
 /processorParam:TextureFormat=Color
 /build:chatgpt_character_1.png
 
+#begin Fonts/debugfont2.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/debugfont2.spritefont
+
 #begin images/backgrounds/reference_background.png
 /importer:TextureImporter
 /processor:TextureProcessor

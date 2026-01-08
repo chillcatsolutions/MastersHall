@@ -29,14 +29,17 @@ namespace MastersHall
 
         private FollowCamera camera;
 
+        private SpriteFont _debugFont;
+        public bool DebugMode { get; }
 
-        public Game1()
+        public Game1(bool debugMode = false)
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             inputManager = new InputManager();
             camera = new(Vector2.Zero);
+            DebugMode = debugMode;
         }
 
         protected override void Initialize()
@@ -65,6 +68,16 @@ namespace MastersHall
             // Create the tilemap from the XML configuration file.
             _tilemap = Tilemap.FromFile(Content, "images/tilemap-definitions.xml");
             _tilemap.Scale = new Vector2(4.0f, 4.0f);
+
+            // Load debug font (optional). If missing, we silently skip drawing debug text.
+            try
+            {
+                _debugFont = Content.Load<SpriteFont>("Fonts/debugfont2");
+            }
+            catch
+            {
+                _debugFont = null;
+            }
         }
             
         protected override void Update(GameTime gameTime)
@@ -99,8 +112,6 @@ namespace MastersHall
             // Draw the tilemap.
             _tilemap.Draw(_spriteBatch);
 
-            //_spriteBatch.Draw(background, Vector2.Zero, Color.White);
-            //_spriteBatch.Draw(texture: character1, position: playerPosition, sourceRectangle: null, color: Color.White, rotation: 0f, origin: Vector2.Zero, scale: characterScale, effects: SpriteEffects.None, layerDepth: 0f);
             _spriteBatch.Draw(texture: character1, position: playerPosition, sourceRectangle: null, color: Color.White, rotation: 0f, origin: Vector2.Zero, scale: characterScale, effects: SpriteEffects.None, layerDepth: 0f);
 
 
@@ -110,11 +121,26 @@ namespace MastersHall
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             _spriteBatch.Begin();
-            //_spriteBatch.Draw(_renderTarget, Vector2.Zero, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
-            _spriteBatch.Draw(_renderTarget, camera.position*scale, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
+            // Draw the world render target shifted by the camera (camera.position is used as offset)
+            _spriteBatch.Draw(_renderTarget, camera.position * scale, null, Color.White, 0f, Vector2.Zero, scale, SpriteEffects.None, 0f);
             _spriteBatch.End();
 
+            // Debug overlay in screen space (bottom-left)
+            if (DebugMode && _debugFont != null)
+            {
+                // Compute tile coordinates from world position
+                float tileWidth = _tilemap.TileWidth;
+                float tileHeight = _tilemap.TileHeight;
+                int tileCol = (int)(playerPosition.X / tileWidth);
+                int tileRow = (int)(playerPosition.Y / tileHeight);
 
+                string debugText = $"World X: {playerPosition.X:0.0}  Y: {playerPosition.Y:0.0}    Tile: {tileCol},{tileRow}";
+                Vector2 textPos = new Vector2(8, _graphics.PreferredBackBufferHeight - 24);
+
+                _spriteBatch.Begin();
+                _spriteBatch.DrawString(_debugFont, debugText, textPos, Color.White);
+                _spriteBatch.End();
+            }
 
             base.Draw(gameTime);
         }

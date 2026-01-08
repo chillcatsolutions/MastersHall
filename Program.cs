@@ -1,2 +1,2 @@
-﻿using var game = new MastersHall.Game1();
+﻿using var game = new MastersHall.Game1(true);
 game.Run();
