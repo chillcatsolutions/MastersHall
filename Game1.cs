@@ -63,7 +63,16 @@ namespace MastersHall
                 1920,
                 1080);
 
-            playerPosition = new Vector2((_renderTarget.Width / 2) - (character1.Width * characterScale / 2), (_renderTarget.Height / 2) - (character1.Height * characterScale / 2));
+            // Compute initial player position so the character starts centered in the window.
+            // We must account for the render scaling that maps the 1920x1080 render target to the back buffer.
+            float initialScale = 1F / (1080F / _graphics.GraphicsDevice.Viewport.Height);
+            Vector2 adjustedScreen = new Vector2(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight) / initialScale;
+            float spriteW = character1.Width * characterScale;
+            float spriteH = character1.Height * characterScale;
+            playerPosition = new Vector2((adjustedScreen.X / 2f) - (spriteW / 2f), (adjustedScreen.Y / 2f) - (spriteH / 2f));
+
+            // Initialize camera position so the player is centered immediately
+            camera.Follow(new Rectangle((int)playerPosition.X, (int)playerPosition.Y, (int)spriteW, (int)spriteH), adjustedScreen);
 
             // Create the tilemap from the XML configuration file.
             _tilemap = Tilemap.FromFile(Content, "images/tilemap-definitions.xml");
@@ -84,6 +93,9 @@ namespace MastersHall
         {
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
+            // Compute render scale based on viewport height so camera centering accounts for scaling
+            scale = 1F / (1080F / _graphics.GraphicsDevice.Viewport.Height);
+
             inputManager.handleInput();
 
             playerPosition += inputManager.input * moveSpeed * dt;
@@ -94,7 +106,9 @@ namespace MastersHall
             playerPosition.X = MathHelper.Clamp(playerPosition.X, 0f, _renderTarget.Width - spriteW);
             playerPosition.Y = MathHelper.Clamp(playerPosition.Y, 0f, _renderTarget.Height - spriteH);
 
-            camera.Follow(new Rectangle((int)playerPosition.X, (int)playerPosition.Y, (int)spriteW, (int)spriteH), new Vector2(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight));
+            // Pass the screen size adjusted by inverse scale so camera centers correctly when render target is scaled
+            Vector2 adjustedScreen = new Vector2(_graphics.PreferredBackBufferWidth, _graphics.PreferredBackBufferHeight) / scale;
+            camera.Follow(new Rectangle((int)playerPosition.X, (int)playerPosition.Y, (int)spriteW, (int)spriteH), adjustedScreen);
 
             base.Update(gameTime);
         }
